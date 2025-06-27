@@ -1,0 +1,31 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      TEMA BASE DE LA APLICACIÓN
+      Hereda directamente de un tema de Material Components.
+      Este es el paso que corrige el crash.
+    -->
+    <style name="Base.Theme.CentroMédicoCibertec" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <!-- Colores primarios de la marca (tu paleta de azules) -->
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_dark_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Colores secundarios de la marca -->
+        <item name="colorSecondary">@color/accent_blue</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Color de la barra de estado -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+
+        <!-- Color de fondo general de las pantallas -->
+        <item name="android:colorBackground">@color/light_background</item>
+    </style>
+
+    <!--
+      TEMA FINAL que usa el Manifest.
+      Hereda del tema base que acabamos de definir.
+    -->
+    <style name="Theme.CentroMédicoCibertec" parent="Base.Theme.CentroMédicoCibertec" />
+
+</resources>

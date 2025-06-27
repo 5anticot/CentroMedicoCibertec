@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      TEMA PARA EL MODO OSCURO (NIGHT MODE)
+      Hereda de la versión Dark de MaterialComponents.
+      Podemos usar los mismos colores o definir variantes más oscuras.
+    -->
+    <style name="Base.Theme.CentroMedico" parent="Theme.MaterialComponents.NoActionBar">
+
+        <!-- Reutilizamos los mismos colores primarios y secundarios,
+             ya que contrastan bien con fondos oscuros.
+        -->
+        <item name="colorPrimary">@color/primary_blue</item>
+        <item name="colorPrimaryVariant">@color/primary_dark_blue</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/accent_blue</item>
+        <item name="colorSecondaryVariant">@color/primary_blue</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Color de la barra de estado -->
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
+        <!-- Aquí podrías definir un color de fondo oscuro si quieres,
+             o dejar que MaterialComponents maneje el suyo por defecto.
+        <item name="android:colorBackground">@color/un_color_oscuro_personalizado</item>
+        -->
+    </style>
+</resources>
