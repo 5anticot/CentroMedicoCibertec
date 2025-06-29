@@ -19,10 +19,10 @@ class AuthViewModel : ViewModel() {
                     Log.d("AuthViewModel", "Registro exitoso ${response.body()}" )
                     onResult(true, null)
                 } else {
-                    onResult(false, "Error: ${response.code()} - ${response.message()}")
+                    onResult(false, "Error (VM): ${response.code()} - ${response.message()}")
                 }
             } catch (e: Exception) {
-                onResult(false, "Exception: ${e.message}")
+                onResult(false, "Exception (VM): ${e.message}")
             }
         }
     }
@@ -34,10 +34,10 @@ class AuthViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     onResult(response.body(), null)
                 } else {
-                    onResult(null, "Error: ${response.code()} - ${response.message()}")
+                    onResult(null, "Error al logear (VM): ${response.code()} - ${response.message()}")
                 }
             } catch (e: Exception) {
-                onResult(null, "Exception: ${e.message}")
+                onResult(null, "Exception (VM): ${e.message}")
             }
         }
     }
@@ -48,13 +48,13 @@ class AuthViewModel : ViewModel() {
                 val response = RetrofitClient.instance.getUsuarioById(usuarioId)
                 if (response.isSuccessful) {
                     onResult(response.body())
-                    Log.d("AuthViewModel", "Usuario obtenido exitosamente: ${response.body()}")
+                    Log.d("AuthViewModel", "Usuario obtenido exitosamente (VM): ${response.body()}")
                 } else {
-                    Log.e("AuthViewModel", "Error al obtener usuario por ID: ${response.code()} - ${response.message()}")
+                    Log.e("AuthViewModel", "Error al obtener usuario por ID (VM): ${response.code()} - ${response.message()}")
                     onResult(null)
                 }
             } catch (e: Exception) {
-                Log.e("AuthViewModel", "Exception al obtener usuario por ID: ${e.message}")
+                Log.e("AuthViewModel", "Exception al obtener usuario por ID (VM): ${e.message}")
                 onResult(null)
             }
         }

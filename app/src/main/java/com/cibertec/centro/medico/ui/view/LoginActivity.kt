@@ -7,10 +7,9 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import com.cibertec.centro.medico.R
+import androidx.core.content.edit
 import com.cibertec.centro.medico.data.model.LoginRequest
 import com.cibertec.centro.medico.databinding.ActivityLoginBinding
-import com.cibertec.centro.medico.databinding.ActivityRegisterBinding
 import com.cibertec.centro.medico.ui.viewmodel.AuthViewModel
 
 class LoginActivity : AppCompatActivity() {
@@ -47,15 +46,18 @@ class LoginActivity : AppCompatActivity() {
             if (usuario != null) {
                 Log.d("LoginActivity", "Usuario logeado: ${usuario.usuarioId}, Rol: ${usuario.rol}, ${usuario.correoElectronico}")
 
+
                 authViewModel.getUsuarioById(usuario.usuarioId) { usuario ->
                     if (usuario != null) {
                         Log.d("LoginActivity", "Usuario obtenido: ${usuario.usuarioId}, Rol: ${usuario.rol}, ${usuario.correoElectronico}")
                         val prefs = getSharedPreferences("sesion", MODE_PRIVATE)
-                        prefs.edit()
-                            .putInt("usuarioId", usuario.usuarioId)
-                            .putString("correo", usuario.correoElectronico)
-                            .putString("rol", usuario.rol)
-                            .apply()
+                        prefs.edit {
+                            putInt("usuarioId", usuario.usuarioId)
+                                .putString("nombre", usuario.nombre)
+                                .putString("apellido", usuario.apellido)
+                                .putString("correo", usuario.correoElectronico)
+                                .putString("rol", usuario.rol)
+                        }
                         Log.d("LoginActivity", "Usuario logeado ${prefs.getInt("usuarioId", 0)}")
 
                     } else {
