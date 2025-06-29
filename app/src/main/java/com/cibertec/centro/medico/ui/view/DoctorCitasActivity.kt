@@ -4,27 +4,35 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.cibertec.centro.medico.R
 import com.cibertec.centro.medico.databinding.ActivityDoctorCitasBinding
 import com.cibertec.centro.medico.ui.adapter.DoctorCitasAdapter
 import com.cibertec.centro.medico.ui.viewmodel.DoctorViewModel
+import com.cibertec.centro.medico.utils.SessionManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class DoctorCitasActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDoctorCitasBinding
     private val viewModel: DoctorViewModel by viewModels()
     private lateinit var adapter: DoctorCitasAdapter
-    private var doctorId: Int = 0
+    private lateinit var sessionManager: SessionManager
+    val doctorId: Int
+        get() = sessionManager.getUsuarioId()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDoctorCitasBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        sessionManager = SessionManager(this)
+
         // Obtener doctorId dentro de onCreate
-        obtenerDoctorId()
 
         setupToolbar()
         setupRecyclerView()
@@ -32,33 +40,21 @@ class DoctorCitasActivity : AppCompatActivity() {
         setupObservers()
         setupListeners()
 
-        // Cargar citas del doctor automáticamente
         if (doctorId > 0) {
             viewModel.cargarCitasDoctor(doctorId, "TODOS")
         } else {
             Toast.makeText(this, "Error: No se pudo obtener el ID del doctor", Toast.LENGTH_LONG).show()
         }
-    }
 
-    private fun obtenerDoctorId() {
-        val prefs = getSharedPreferences("sesion", MODE_PRIVATE)
-        doctorId = prefs.getInt("usuarioId", 0)
-
-        // Si tienes un campo de texto para mostrar/editar el ID del doctor
-        if (::binding.isInitialized) {
-            binding.etDoctorId?.setText(doctorId.toString())
-        }
+        configurarMenuOpciones()
     }
 
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
         supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowHomeEnabled(true)
+            setDisplayHomeAsUpEnabled(false)
+            setDisplayShowHomeEnabled(false)
             title = "Mis Citas como Doctor"
-        }
-        binding.toolbar.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -74,7 +70,6 @@ class DoctorCitasActivity : AppCompatActivity() {
         binding.spinnerEstado.adapter = spinnerAdapter
     }
 
-    // Si no necesitas el campo de texto, simplifica así:
     private fun setupListeners() {
         binding.btnBuscarDoctorCitas.setOnClickListener {
             val estadoSeleccionado = binding.spinnerEstado.selectedItem.toString()
@@ -86,12 +81,7 @@ class DoctorCitasActivity : AppCompatActivity() {
         }
 
         binding.fabCrearCita?.setOnClickListener {
-            // Usar el doctorId obtenido de SharedPreferences o del campo de texto
-            val idDoctor = if (doctorId > 0) {
-                doctorId
-            } else {
-                binding.etDoctorId?.text?.toString()?.toIntOrNull() ?: 0
-            }
+            val idDoctor = doctorId
 
             if (idDoctor > 0) {
                 val intent = Intent(this, CrearCitaActivity::class.java).apply {
@@ -108,7 +98,6 @@ class DoctorCitasActivity : AppCompatActivity() {
         viewModel.citasDoctor.observe(this) { citas ->
             adapter.submitList(citas)
 
-            // Mostrar mensaje si no hay citas
             if (citas.isEmpty()) {
                 Toast.makeText(this, "No se encontraron citas", Toast.LENGTH_SHORT).show()
             }
@@ -123,5 +112,58 @@ class DoctorCitasActivity : AppCompatActivity() {
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun configurarMenuOpciones() {
+        val btnMenu = findViewById<ImageButton>(R.id.btnMenu) // Asegúrate de tener un botón en tu layout
+
+        btnMenu.setOnClickListener { view ->
+            mostrarMenuOpciones(view)
+        }
+    }
+
+    private fun mostrarMenuOpciones(anchorView: View) {
+        val popup = PopupMenu(this, anchorView)
+        popup.menuInflater.inflate(R.menu.menu_opciones, popup.menu)
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_cerrar_sesion -> {
+                    confirmarCerrarSesion()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popup.show()
+    }
+
+    private fun confirmarCerrarSesion() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Cerrar Sesión")
+            .setMessage("¿Estás seguro de que quieres cerrar la sesión?")
+            .setPositiveButton("Cerrar Sesión") { _, _ ->
+                logout()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun logout() {
+        try {
+            sessionManager.clearSession()
+            Toast.makeText(this, "Sesión cerrada exitosamente", Toast.LENGTH_SHORT).show()
+            redirectToLogin()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error al cerrar sesión", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun redirectToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

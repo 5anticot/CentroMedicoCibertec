@@ -20,7 +20,9 @@ data class Usuario(
     @Json(name = "telefono")
     val telefono: String? = null,
     @Json(name = "especialidad")
-    val especialidad: String? = null
+    val especialidad: String? = null,
+    @Json(name = "especialidadId")
+    val especialidadId: Int? = null
 )
 
 @JsonClass(generateAdapter = true)

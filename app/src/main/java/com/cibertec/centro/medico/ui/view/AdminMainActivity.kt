@@ -1,7 +1,9 @@
 package com.cibertec.centro.medico.ui.view
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.PopupMenu
@@ -15,10 +17,13 @@ import com.cibertec.centro.medico.data.model.UsuarioUpdate
 import com.cibertec.centro.medico.databinding.ActivityAdminMainBinding
 import com.cibertec.centro.medico.ui.adapter.UsuariosAdapter
 import com.cibertec.centro.medico.ui.viewmodel.AdminViewModel
+import com.cibertec.centro.medico.utils.SessionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
 class AdminMainActivity : AppCompatActivity() {
+
+    private lateinit var sessionManager: SessionManager
 
     private lateinit var binding: ActivityAdminMainBinding
     private val viewModel: AdminViewModel by viewModels()
@@ -37,8 +42,37 @@ class AdminMainActivity : AppCompatActivity() {
         viewModel.cargarUsuarios()
         configurarMenuOpciones()
 
+        sessionManager = SessionManager(this)
+
+        if (!sessionManager.isLoggedIn()) {
+            redirectToLogin()
+            return
+        }
+
 
     }
+
+    private fun logout() {
+        try {
+            // Limpiar sesión
+            sessionManager.clearSession()
+            Log.d("PacienteMainActivity", "Sesión cerrada exitosamente")
+            Toast.makeText(this, "Sesión cerrada exitosamente", Toast.LENGTH_SHORT).show()
+            redirectToLogin()
+        } catch (e: Exception) {
+            Log.e("PacienteMainActivity", "Error al cerrar sesión: ${e.message}", e)
+            Toast.makeText(this, "Error al cerrar sesión", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun redirectToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+
 
     private fun configurarMenuOpciones() {
         val btnMenu = findViewById<ImageButton>(R.id.btnMenu)
@@ -74,24 +108,13 @@ class AdminMainActivity : AppCompatActivity() {
             .setTitle("Cerrar Sesión")
             .setMessage("¿Estás seguro de que quieres cerrar la sesión?")
             .setPositiveButton("Cerrar Sesión") { _, _ ->
-                cerrarSesion()
+                logout()
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-    private fun cerrarSesion() {
-        // Aquí implementas tu lógica de cerrar sesión
 
-        // 1. Limpiar SharedPreferences/datos de sesión
-        val sharedPrefs = getSharedPreferences("user_session", Context.MODE_PRIVATE)
-        sharedPrefs.edit().clear().apply()
-
-        finish()
-
-        // 3. Opcional: Mostrar mensaje
-        Toast.makeText(this, "Sesión cerrada exitosamente", Toast.LENGTH_SHORT).show()
-    }
 
 
     private fun setupToolbar() {
@@ -122,7 +145,6 @@ class AdminMainActivity : AppCompatActivity() {
         viewModel.usuarios.observe(this) { usuarios ->
             adapter.submitList(usuarios)
 
-            // Mostrar mensaje si no hay usuarios
             if (usuarios.isEmpty()) {
                 binding.tvEmptyState.visibility = View.VISIBLE
                 binding.rvUsuarios.visibility = View.GONE
@@ -162,23 +184,16 @@ class AdminMainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Actualiza un usuario usando el ViewModel
-     */
+
     private fun actualizarUsuario(usuarioUpdate: UsuarioUpdate) {
         viewModel.actualizarUsuario(usuarioUpdate)
     }
 
-    /**
-     * Elimina un usuario usando el ViewModel
-     */
+
     private fun eliminarUsuario(usuario: UsuarioResponse) {
         viewModel.eliminarUsuario(usuario.usuarioId)
     }
 
-    /**
-     * Muestra un mensaje de éxito usando Snackbar
-     */
     private fun mostrarMensajeExito(mensaje: String) {
         Snackbar.make(binding.root, mensaje, Snackbar.LENGTH_LONG)
             .setBackgroundTint(getColor(android.R.color.holo_green_dark))
@@ -187,13 +202,12 @@ class AdminMainActivity : AppCompatActivity() {
             .show()
     }
 
-    /**
-     * Muestra un mensaje de error usando Snackbar
-     */
     private fun mostrarMensajeError(mensaje: String) {
         Snackbar.make(binding.root, mensaje, Snackbar.LENGTH_LONG)
             .setBackgroundTint(getColor(android.R.color.holo_red_dark))
             .setTextColor(getColor(android.R.color.white))
             .show()
     }
+
+
 }
