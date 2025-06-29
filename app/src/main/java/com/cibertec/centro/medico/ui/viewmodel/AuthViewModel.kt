@@ -31,6 +31,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = RetrofitClient.instance.loginUsuario(loginRequest)
+                Log.d("AuthViewModel", "Respuesta de login: ${response.body()}")
                 if (response.isSuccessful) {
                     onResult(response.body(), null)
                 } else {

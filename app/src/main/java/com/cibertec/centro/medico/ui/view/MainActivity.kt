@@ -19,14 +19,6 @@ class MainActivity : AppCompatActivity() {
 
     // --- CORRECCIÓN AQUÍ ---
     private fun setupListeners() {
-        // Usamos los nombres en camelCase generados por View Binding
-        binding.btnCitasDisponibles.setOnClickListener {
-            startActivity(Intent(this, CitasDisponiblesActivity::class.java))
-        }
-
-        binding.btnMisCitas.setOnClickListener {
-            startActivity(Intent(this, MisCitasActivity::class.java))
-        }
 
         binding.btnPortalDoctor.setOnClickListener {
             startActivity(Intent(this, DoctorCitasActivity::class.java))

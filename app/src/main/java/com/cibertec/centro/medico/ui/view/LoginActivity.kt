@@ -57,6 +57,7 @@ class LoginActivity : AppCompatActivity() {
                                 .putString("apellido", usuario.apellido)
                                 .putString("correo", usuario.correoElectronico)
                                 .putString("rol", usuario.rol)
+                                .putString("Especialidad", usuario.especialidad)
                         }
                         Log.d("LoginActivity", "Usuario logeado ${prefs.getInt("usuarioId", 0)}")
 
@@ -68,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
 
                 when (usuario.rol) {
                     "DOCTOR" -> {
-                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                        startActivity(Intent(this@LoginActivity, DoctorCitasActivity::class.java))
                     }
                     "ADMINISTRADOR" -> {
                         startActivity(Intent(this@LoginActivity, AdminMainActivity::class.java))

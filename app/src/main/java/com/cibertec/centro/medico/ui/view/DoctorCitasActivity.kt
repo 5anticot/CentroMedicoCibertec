@@ -16,30 +16,50 @@ class DoctorCitasActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDoctorCitasBinding
     private val viewModel: DoctorViewModel by viewModels()
     private lateinit var adapter: DoctorCitasAdapter
+    private var doctorId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDoctorCitasBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        binding.toolbar.setNavigationOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
-        }
+        // Obtener doctorId dentro de onCreate
+        obtenerDoctorId()
 
         setupToolbar()
         setupRecyclerView()
         setupSpinnerEstado()
         setupObservers()
         setupListeners()
+
+        // Cargar citas del doctor automáticamente
+        if (doctorId > 0) {
+            viewModel.cargarCitasDoctor(doctorId, "TODOS")
+        } else {
+            Toast.makeText(this, "Error: No se pudo obtener el ID del doctor", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun obtenerDoctorId() {
+        val prefs = getSharedPreferences("sesion", MODE_PRIVATE)
+        doctorId = prefs.getInt("usuarioId", 0)
+
+        // Si tienes un campo de texto para mostrar/editar el ID del doctor
+        if (::binding.isInitialized) {
+            binding.etDoctorId?.setText(doctorId.toString())
+        }
     }
 
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            title = "Mis Citas como Doctor"
+        }
+        binding.toolbar.setNavigationOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -54,26 +74,32 @@ class DoctorCitasActivity : AppCompatActivity() {
         binding.spinnerEstado.adapter = spinnerAdapter
     }
 
+    // Si no necesitas el campo de texto, simplifica así:
     private fun setupListeners() {
         binding.btnBuscarDoctorCitas.setOnClickListener {
-            val doctorId = binding.etDoctorId.text.toString().toIntOrNull()
             val estadoSeleccionado = binding.spinnerEstado.selectedItem.toString()
-            if (doctorId != null) {
+            if (doctorId > 0) {
                 viewModel.cargarCitasDoctor(doctorId, estadoSeleccionado)
             } else {
-                Toast.makeText(this, "Ingresa un ID de Doctor válido.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error: ID de doctor no válido", Toast.LENGTH_SHORT).show()
             }
         }
 
-        binding.fabCrearCita.setOnClickListener {
-            val doctorId = binding.etDoctorId.text.toString().toIntOrNull()
-            if (doctorId != null) {
+        binding.fabCrearCita?.setOnClickListener {
+            // Usar el doctorId obtenido de SharedPreferences o del campo de texto
+            val idDoctor = if (doctorId > 0) {
+                doctorId
+            } else {
+                binding.etDoctorId?.text?.toString()?.toIntOrNull() ?: 0
+            }
+
+            if (idDoctor > 0) {
                 val intent = Intent(this, CrearCitaActivity::class.java).apply {
-                    putExtra("DOCTOR_ID", doctorId)
+                    putExtra("DOCTOR_ID", idDoctor)
                 }
                 startActivity(intent)
             } else {
-                Toast.makeText(this, "Primero busca un ID de doctor para poder crear citas.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Error: ID de doctor no válido para crear cita", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -81,10 +107,17 @@ class DoctorCitasActivity : AppCompatActivity() {
     private fun setupObservers() {
         viewModel.citasDoctor.observe(this) { citas ->
             adapter.submitList(citas)
+
+            // Mostrar mensaje si no hay citas
+            if (citas.isEmpty()) {
+                Toast.makeText(this, "No se encontraron citas", Toast.LENGTH_SHORT).show()
+            }
         }
+
         viewModel.isLoading.observe(this) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
+
         viewModel.toastMessage.observe(this) { message ->
             if (message.isNotEmpty()) {
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show()

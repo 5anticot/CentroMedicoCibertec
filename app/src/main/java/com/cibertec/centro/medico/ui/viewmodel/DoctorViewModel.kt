@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 
 
 class DoctorViewModel : ViewModel() {
+
     private val repository = CitaRepository()
 
     private val _citasDoctor = MutableLiveData<List<CitaDoctor>>()

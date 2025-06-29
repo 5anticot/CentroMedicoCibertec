@@ -5,9 +5,10 @@ import retrofit2.http.*
 import retrofit2.*
 interface ApiService
 {
-    // --- Especialidades ---
 
-    @GET("api/Especialidades/GetEspecialidades")
+    // --- SELECTS antes especialidades ---
+
+    @GET("api/Selects/GetEspecialidades")
     suspend fun getEspecialidades(): Response<List<Especialidad>>
 
 

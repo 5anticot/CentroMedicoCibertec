@@ -2,6 +2,8 @@ package com.cibertec.centro.medico.ui.view
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +30,10 @@ class MisCitasFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMisCitasBinding.inflate(inflater, container, false)
+
+        // Configurar SwipeRefreshLayout ANTES del return
+        setupSwipeRefresh()
+
         return binding.root
     }
 
@@ -40,6 +46,21 @@ class MisCitasFragment : Fragment() {
 
         // Cargar automáticamente las citas del usuario logueado
         cargarCitasAutomaticamente()
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefreshLayout.apply {
+            setOnRefreshListener {
+                recargarDatos()
+            }
+            // Personalizar colores del indicador (opcional)
+            setColorSchemeResources(
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light
+            )
+        }
     }
 
     private fun cargarCitasAutomaticamente() {
@@ -94,11 +115,19 @@ class MisCitasFragment : Fragment() {
                 binding.txtSinCitas.visibility = View.GONE
                 binding.rvMisCitas.visibility = View.VISIBLE
             }
+
+            // Detener el refresh cuando se actualicen los datos
+            binding.swipeRefreshLayout.isRefreshing = false
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             Log.d("MisCitasFragment", "Loading state: $isLoading")
+
+            // Sincronizar el SwipeRefreshLayout con el estado de carga del ViewModel
+            if (!isLoading) {
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
         }
 
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
@@ -123,5 +152,12 @@ class MisCitasFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun recargarDatos() {
+        Log.d("MisCitasFragment", "Recargando datos...")
+        cargarCitasAutomaticamente()
+        // Ya no necesitamos el Handler aquí, el refresh se detiene automáticamente
+        // cuando se actualicen los datos en los observers
     }
 }
