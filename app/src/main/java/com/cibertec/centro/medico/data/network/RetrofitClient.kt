@@ -8,7 +8,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 object RetrofitClient
 {
-    private const val BASE_URL = "http://apiwebcentromedico.somee.com/"
+    // private const val BASE_URL = "http://apiwebcentromedico.somee.com/"
+    private const val BASE_URL = "https://apiwebcentromedico-production.up.railway.app/"
 
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -22,4 +23,6 @@ object RetrofitClient
         retrofit.create(ApiService::class.java)
 
     }
+
+
 }

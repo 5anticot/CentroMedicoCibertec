@@ -6,27 +6,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/light_background"
-    tools:context=".ui.view.MisCitasActivity">
+    tools:context=".ui.view.MisCitasFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="Mis Citas"
-            app:titleTextColor="@color/white"
-            android:background="@color/primary_blue"/>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Sección para ingresar ID de paciente -->
+    <!-- Sección para ingresar ID de paciente (oculta por defecto) -->
     <LinearLayout
+        android:id="@+id/layoutBusqueda"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:visibility="gone">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
@@ -54,6 +44,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:visibility="gone"/>
+
+    <!-- Mensaje cuando no hay citas -->
+    <TextView
+        android:id="@+id/txtSinCitas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No tienes citas programadas"
+        android:textSize="16sp"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:padding="32dp"
         android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView

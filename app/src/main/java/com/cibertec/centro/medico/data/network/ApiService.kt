@@ -61,4 +61,47 @@ interface ApiService
     suspend fun marcarCitaAtendida(@Query("CitaId") citaId: Int): Response<Unit>
 
 
+
+
+
+
+
+    // --- Usuarios ---
+
+
+
+
+    @GET("api/Admins/GetUsuarios")
+    suspend fun getUsuarios(): Response<List<UsuarioResponse>>
+
+    @GET("api/Admins/GetUsuarioById/{usuarioId}")
+    suspend fun getUsuarioById(
+        @Path("usuarioId") usuarioId: Int
+    ): Response<Usuario>
+
+    @PUT("api/Admins/ActualizarUsuario")
+    suspend fun actualizarUsuario(
+        @Body usuario: UsuarioUpdate
+    ): Response<Unit>
+
+    @DELETE("api/Admins/EliminarUsuario/{usuarioId}")
+    suspend fun eliminarUsuario(
+        @Path("usuarioId") usuarioId: Int
+    ): Response<Unit>
+
+
+    // -- Autenticación --
+
+    @POST("api/Usuarios/LoginUsuario")
+    suspend fun loginUsuario(
+        @Body request : LoginRequest
+    ): Response<Usuario>
+
+    @POST("api/Usuarios/RegistrarUsuario")
+    suspend fun registrarUsuario(
+        @Body request: RegisterRequest
+    ): Response<Unit>
+
+
+
 }

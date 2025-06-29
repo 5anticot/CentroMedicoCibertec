@@ -15,16 +15,30 @@
         android:theme="@style/Theme.CentroMédicoCibertec"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
         <activity
-            android:name=".ui.view.MainActivity"
+            android:name=".ui.view.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".ui.view.RegisterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.view.AdminMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.view.PacienteMainActivity"
+            android:exported="false" >
+        </activity>
+        <activity
+            android:name=".ui.view.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.view.MainActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.view.CitasDisponiblesActivity"
             android:parentActivityName=".ui.view.MainActivity" />

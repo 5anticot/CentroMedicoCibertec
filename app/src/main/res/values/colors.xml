@@ -3,11 +3,13 @@
     <!-- Colores base -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
 
     <!-- Tu paleta de azules tranquilos personalizada -->
     <color name="primary_blue">#007BFF</color>
     <color name="primary_dark_blue">#0056b3</color>
     <color name="accent_blue">#00C9FF</color>
+    <color name="crimson_red">  #C70039  </color>
 
     <!-- Colores de UI y Texto -->
     <color name="light_background">#F0F8FF</color>
